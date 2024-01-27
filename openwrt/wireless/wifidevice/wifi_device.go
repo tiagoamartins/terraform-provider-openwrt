@@ -1,6 +1,7 @@
 package wifidevice
 
 import (
+	"regexp"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -104,8 +105,12 @@ var (
 		ResourceExistence: lucirpcglue.Required,
 		UpsertRequest:     lucirpcglue.UpsertRequestOptionString(modelGetChannel, channelAttribute, channelUCIOption),
 		Validators: []validator.String{
-			stringvalidator.OneOf(
-				channelAuto,
+			stringvalidator.Any(
+				stringvalidator.OneOf(channelAuto),
+				stringvalidator.RegexMatches(
+					regexp.MustCompile(`^[0-9]{1,3}?$`),
+					"must only contain numbers",
+				),
 			),
 		},
 	}
